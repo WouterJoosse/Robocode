@@ -96,9 +96,9 @@ public class WallAvoidenceBot extends AdvancedRobot {
         else if (newHeading == SOUTH && currentPosition.getY() < cornerHeight)
             newHeading = NORTH;
 
-        if (newHeading == WEST && currentPosition.getX() > battleFieldWidth - cornerWidth)
+        if (newHeading == WEST && currentPosition.getX() < cornerWidth )
             newHeading = EAST;
-        else if (newHeading == EAST && currentPosition.getX() < cornerWidth)
+        else if (newHeading == EAST && currentPosition.getX() > battleFieldWidth - cornerWidth)
             newHeading = WEST;
 
         adjustBodyTowardsRadians(newHeading);
@@ -133,7 +133,8 @@ public class WallAvoidenceBot extends AdvancedRobot {
         g.drawRect(0,0,(int)cornerWidth,(int)cornerHeight);
         g.drawRect((int) (battleFieldWidth - cornerWidth) +1 ,0,(int)cornerWidth,(int)cornerHeight);
         g.drawRect(0,(int) (battleFieldHeight - cornerHeight) +1 ,(int)cornerWidth,(int)cornerHeight);
-        g.drawRect((int) (battleFieldWidth - cornerWidth) +1 ,(int) (battleFieldHeight - cornerHeight) +1 ,(int)cornerWidth,(int)cornerHeight);
+        g.drawRect((int) (battleFieldWidth - cornerWidth) +1 ,(int) (battleFieldHeight - cornerHeight) +1 ,
+                (int)cornerWidth,(int)cornerHeight);
 
 
     }
