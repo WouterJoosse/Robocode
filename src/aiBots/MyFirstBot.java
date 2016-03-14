@@ -4,16 +4,18 @@ import robocode.*;
 import robocode.control.BattlefieldSpecification;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.util.Stack;
 
 public class MyFirstBot extends AdvancedRobot {
 
     public Stack<String> remainingRobotsNames = new Stack<String>();
+    public double battleFieldWidth, battleFieldHeight;
 
-    public double battleFieldWidth = getBattleFieldWidth();
-    public double battleFieldHeight = getBattleFieldHeight();
-	
     public void run() {
+
+        battleFieldWidth = getBattleFieldWidth();
+        battleFieldHeight = getBattleFieldHeight();
 
         while (true) {
 
@@ -50,9 +52,11 @@ public class MyFirstBot extends AdvancedRobot {
 
     private boolean wallInPath(int rayLength, double rayArc) {
 
+        Point2D robotPosition = new Point2D.Double(getX(), getY());
         double heading = getHeading();
-        double leftBound = heading + (rayArc / 2);
-        double rightBound = heading - (rayArc / 2);
+
+        double leftArc = heading + (rayArc / 2);
+        double rightArc = heading - (rayArc / 2);
 
         Point leftRayEnd = new Point();
         Point rigthRayEnd = new Point();
