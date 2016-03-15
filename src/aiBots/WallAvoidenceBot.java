@@ -4,6 +4,7 @@ import robocode.*;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
+import java.util.HashMap;
 
 public class WallAvoidenceBot extends TeamRobot {
 
@@ -13,32 +14,19 @@ public class WallAvoidenceBot extends TeamRobot {
     private final double EAST = Math.PI / 2;
     private final double SOUTH = Math.PI;
     private final double WEST = 3 * Math.PI / 2;
+    private Tank target;
 
     public double battleFieldWidth, battleFieldHeight,
             currentHeading, leftAngle, rightAngle,
             rayLength, cornerHeight, cornerWidth;
     public Point2D currentPosition, mainRayPos, leftRayPos, rightRayPos;
 
-    int ticksSinceLastFullRadarScan = 0;
-    int scanThreshold = 10;
-
-    private String robotFocus = null;
-
-    private String[] teamMates;
-
     public void run() {
-
         battleFieldWidth = getBattleFieldWidth();
         battleFieldHeight = getBattleFieldHeight();
         rayLength = Math.max(75,getBattleFieldWidth()*0.10);
         cornerHeight = Math.max(80, battleFieldHeight * 0.20);
-        cornerWidth = Math.max(80, battleFieldWidth * 0.20);
-
-        teamMates = getTeammates();
-
-        setAdjustGunForRobotTurn(true);
-        setAdjustRadarForGunTurn(true);
-
+        cornerWidth = Math.max(80, 1.5 * battleFieldWidth * 0.20);
 
         while (true) {
 
@@ -53,45 +41,30 @@ public class WallAvoidenceBot extends TeamRobot {
             leftRayPos = calculatePosFromRobot(leftAngle, rayLength);
             rightRayPos = calculatePosFromRobot(rightAngle, rayLength);
 
-            if (ticksSinceLastFullRadarScan % scanThreshold == 0){
-                adjustRadarHeadingRadians(currentHeading);
-                makeFullScan();
-            }
-
-            else {
-                //focusOnEnemy(robotFocus);
-            }
-
-
             avoidWalls();
-
-
-
-            ahead(50);
-
-            ticksSinceLastFullRadarScan++;
+            
+            aimAndShoot();
+            
+            ahead(10);
 
         }
     }
 
     public void onScannedRobot(ScannedRobotEvent e) {
+    	
+        System.out.println(e.getName());
+        
 
-        boolean isTeamMate = false;
-
-        for (String teammate : teamMates) {
-            if (teammate.equals(e.getName()))
-                isTeamMate = true;
-        }
-
-
-        if (!isTeamMate) {
-            // Store interesting infromation
-
-
-        }
-
-
-
+    }
+    
+    public void aimAndShoot(){
+    	target = Tank.getClosestTank(this);
+    	if(target != null){
+    		double direction = target.bearing + currentHeading;
+    		turnGunRight(direction-getGunHeading());
+    	}
+    	setFire(1);
+    	execute();
     }
 
     /** Calculates the end position of an object given the angle and the distance
@@ -100,7 +73,7 @@ public class WallAvoidenceBot extends TeamRobot {
      * @param distance The distance between the robot and the object
      * @return the position of the object
      */
-    public Point2D calculatePosFromRobot(double angle, double distance) {
+    private Point2D calculatePosFromRobot(double angle, double distance) {
 
         double x = currentPosition.getX() + (Math.sin(angle) * distance);
         double y = currentPosition.getY() + (Math.cos(angle) * distance);
@@ -145,6 +118,19 @@ public class WallAvoidenceBot extends TeamRobot {
         adjustBodyTowardsRadians(newHeading);
 
     }
+
+    // Not used yet
+    public void findObstacles() {
+
+    }
+
+    private void adjustCourseParallelToWall() {
+
+        adjustBodyTowardsRadians(Math.PI * 0.75);
+        execute();
+
+    }
+
 
     @Override
     /** Draws graphical debugging information on the battlefield
@@ -192,35 +178,6 @@ public class WallAvoidenceBot extends TeamRobot {
         } else {
             setTurnRightRadians((2*Math.PI)-adjustment);
         }
-
-        execute();
-    }
-
-    private void adjustRadarToPoint(Point2D position) {
-
-
-
-    }
-
-    private void adjustRadarHeadingRadians(double goal) {
-
-        double adjustment = getRadarHeadingRadians() - goal;
-
-        setTurnRadarLeftRadians(adjustment);
-
-        execute();
-    }
-
-    private void makeFullScan() {
-
-        double currentHeading = getRadarHeadingRadians();
-
-        double goal = currentHeading + Math.PI;
-
-        adjustRadarHeadingRadians(goal);
-
-
-
     }
 
 }
