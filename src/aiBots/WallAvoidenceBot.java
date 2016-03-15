@@ -146,14 +146,6 @@ public class WallAvoidenceBot extends TeamRobot {
 
     }
 
-    private void adjustCourseParallelToWall() {
-
-        adjustBodyTowardsRadians(Math.PI * 0.75);
-        execute();
-
-    }
-
-
     @Override
     /** Draws graphical debugging information on the battlefield
      */
@@ -204,12 +196,15 @@ public class WallAvoidenceBot extends TeamRobot {
         execute();
     }
 
+    private void adjustRadarToPoint(Point2D position) {
+
+
+
+    }
+
     private void adjustRadarHeadingRadians(double goal) {
 
         double adjustment = getRadarHeadingRadians() - goal;
-        System.out.println(getRadarHeadingRadians());
-        System.out.println(goal);
-        System.out.println(adjustment);
 
         setTurnRadarLeftRadians(adjustment);
 
