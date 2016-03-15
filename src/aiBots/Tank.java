@@ -25,6 +25,7 @@ public class Tank {
 	public double velocity;
 	public double bearing;
 	public double energy;
+	public double distance;
 	
 	public static void UpdateTank(ScannedRobotEvent e, TeamRobot myRobot){
 		Tank tank = tanks.get(e.getName());
@@ -38,6 +39,7 @@ public class Tank {
 		tank.heading = e.getHeading();
 		tank.bearing = e.getBearing();
 		tank.energy = e.getEnergy();
+		tank.distance = e.getDistance();
 	}
 	
 	private static Point2D calculatePosFromRobot(double x, double y, double angle, double distance) {
@@ -54,5 +56,20 @@ public class Tank {
 	
 	public static Tank getTank(String name){
 		return tanks.get(name);
+	}
+	
+	public static Tank getClosestTank(TeamRobot myRobot){
+		Tank closestTank = null;
+		double distance = Double.MAX_VALUE;
+    	if(tanks.size() != 0){
+    		for (String name : tanks.keySet()) {
+				Tank t = tanks.get(name);
+				if(t.distance < distance){
+					distance = t.distance;
+					closestTank = t;
+				}
+			}
+    	}
+		return closestTank;
 	}
 }
