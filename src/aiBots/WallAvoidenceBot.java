@@ -14,24 +14,43 @@ public class WallAvoidenceBot extends TeamRobot {
     private final double EAST = Math.PI / 2;
     private final double SOUTH = Math.PI;
     private final double WEST = 3 * Math.PI / 2;
-    private Tank target;
 
     public double battleFieldWidth, battleFieldHeight,
             currentHeading, leftAngle, rightAngle,
             rayLength, cornerHeight, cornerWidth;
     public Point2D currentPosition, mainRayPos, leftRayPos, rightRayPos;
 
+    int ticksSinceLastFullRadarScan = 0;
+    int scanThreshold = 40;
+
+    private Tank robotFocus = null;
+
+    private String[] teamMates;
+
     public void run() {
+
         battleFieldWidth = getBattleFieldWidth();
         battleFieldHeight = getBattleFieldHeight();
         rayLength = Math.max(75,getBattleFieldWidth()*0.10);
         cornerHeight = Math.max(80, battleFieldHeight * 0.20);
-        cornerWidth = Math.max(80, 1.5 * battleFieldWidth * 0.20);
+        cornerWidth = Math.max(80, battleFieldWidth * 0.20);
+
+        teamMates = getTeammates();
+
+        //setAdjustGunForRobotTurn(true);
+        setAdjustRadarForGunTurn(true);
+
+        setTurnGunRightRadians(.5*Math.PI);
 
         while (true) {
 
             currentPosition = new Point2D.Double(getX(),getY());
             currentHeading = getHeadingRadians();
+
+
+
+            setTurnRadarRightRadians( Double.POSITIVE_INFINITY);
+            scan();
 
             // Must be radians...
             leftAngle = currentHeading - Math.toRadians(RAYARC);
@@ -42,31 +61,36 @@ public class WallAvoidenceBot extends TeamRobot {
             rightRayPos = calculatePosFromRobot(rightAngle, rayLength);
 
             avoidWalls();
-            
-            aimAndShoot();
-            
-            ahead(10);
+
+            //aimAndShoot();
+
+            ahead(50);
+            execute();
+
+            ticksSinceLastFullRadarScan++;
 
         }
     }
 
-    public void onScannedRobot(ScannedRobotEvent e) {
-    	
-        System.out.println(e.getName());
-        
 
+    public void onScannedRobot(ScannedRobotEvent e) {
+
+        Tank.UpdateTank(e,this);
     }
-    
+
+    /*
     public void aimAndShoot(){
-    	target = Tank.getClosestTank(this);
+    	Tank target = Tank.getClosestTank(this);
     	if(target != null){
     		double direction = target.bearing + currentHeading;
     		turnGunRight(direction-getGunHeading());
+
+            System.out.println("Direction gun:" + direction);
     	}
     	setFire(1);
     	execute();
     }
-
+    */
     /** Calculates the end position of an object given the angle and the distance
      * between the robot and the object
      * @param angle The angle between the robot and the object (bearing)
@@ -119,19 +143,6 @@ public class WallAvoidenceBot extends TeamRobot {
 
     }
 
-    // Not used yet
-    public void findObstacles() {
-
-    }
-
-    private void adjustCourseParallelToWall() {
-
-        adjustBodyTowardsRadians(Math.PI * 0.75);
-        execute();
-
-    }
-
-
     @Override
     /** Draws graphical debugging information on the battlefield
      */
@@ -175,9 +186,38 @@ public class WallAvoidenceBot extends TeamRobot {
 
         if (adjustment - Math.PI < 0) {
             setTurnLeftRadians(adjustment);
+            setTurnRadarLeftRadians(adjustment);
         } else {
             setTurnRightRadians((2*Math.PI)-adjustment);
+            setTurnRadarRightRadians((2*Math.PI)-adjustment);
         }
+
+        execute();
+    }
+
+
+    private void adjustRadarHeadingRadians(double goal) {
+
+        double adjustment = goal - getRadarHeadingRadians();
+
+        if (adjustment - Math.PI < 0) {
+            setTurnRadarLeftRadians(adjustment);
+        } else {
+            setTurnRadarRightRadians((2*Math.PI) - adjustment);
+        }
+
+        execute();
+    }
+
+    private void makeFullScan() {
+
+        //if (currentPosition.getX() > )
+
+        setTurnRadarLeftRadians(2*Math.PI);
+        execute();
+
+
+
     }
 
 }
