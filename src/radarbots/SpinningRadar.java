@@ -1,4 +1,4 @@
-package targetingbots;
+package radarbots;
 
 import robocode.*;
 

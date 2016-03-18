@@ -1,4 +1,4 @@
-package targetingbots;
+package radarbots;
 
 import robocode.AdvancedRobot;
 import robocode.ScannedRobotEvent;
@@ -12,10 +12,7 @@ public class TurnMulitplierLock extends AdvancedRobot{
 
     public void run() {
 
-        setAdjustGunForRobotTurn(true);
-        setAdjustRadarForGunTurn(true);
         setTurnRadarRightRadians(Double.POSITIVE_INFINITY);
-        setTurnGunRightRadians(Double.POSITIVE_INFINITY);
         execute();
 
 
@@ -37,13 +34,9 @@ public class TurnMulitplierLock extends AdvancedRobot{
         double radarTurn =
                 getHeadingRadians() + e.getBearingRadians() - getRadarHeadingRadians();
 
-        double gunTurn =
-                getHeadingRadians() + e.getBearingRadians() - getGunHeadingRadians();
+        double factor = 2.0;
+        setTurnRadarRightRadians(factor * Utils.normalRelativeAngle(radarTurn));
 
-        setTurnRadarRightRadians(Utils.normalRelativeAngle(radarTurn));
-        setTurnGunRightRadians(Utils.normalRelativeAngle(gunTurn));
-        setFire((Math.min(getBattleFieldHeight(),getBattleFieldWidth()) - e.getDistance())
-                % Math.min(getBattleFieldHeight(),getBattleFieldWidth()));
 
     }
 
