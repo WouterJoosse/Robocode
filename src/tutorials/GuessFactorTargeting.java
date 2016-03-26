@@ -67,7 +67,8 @@ public class GuessFactorTargeting extends AdvancedRobot {
             // pointed at the enemy and our onScannedRobot code doesn't end up telling
             // it to turn, so the system doesn't automatically call scan() for  us
             // [see the javadocs for scan()].
-            scan();
+            // scan();
+            moveTowardsCenter();
             execute();
         }
     }
@@ -152,40 +153,26 @@ public class GuessFactorTargeting extends AdvancedRobot {
         double factor = 2.0;
         setTurnRadarRightRadians(factor * Utils.normalRelativeAngle(radarTurn));
 
-        execute();
     }
 
     private void moveTowardsCenter() {
 
 
-        double xCenter = getBattleFieldWidth() / 2;
-        double yCenter = getBattleFieldHeight() / 2;
         if (centerTarget == null)
-            centerTarget = new Point2D.Double(xCenter,yCenter);
+            centerTarget = new Point2D.Double(getBattleFieldWidth() / 2, getBattleFieldHeight() / 2);
 
-        double xDif = xCenter - getX();
-        double yDif = yCenter - getY();
 
-        System.out.println("==============================");
-        System.out.println("Current Heading: " + getHeadingRadians());
-        System.out.println("Heading vs x-axis: " + (getHeadingRadians() - PI/2));
-        System.out.println("xDif: " + xDif);
-        System.out.println("yDif: " + yDif);
-        System.out.println("Angle middle vs x-axis: " + Math.atan(yDif / xDif));
-        System.out.println("Adjustment: " + (PI/2 + Math.atan2(yDif, xDif)));
-        System.out.println("Bearing: " + getBearingToPoint(centerTarget));
-
-        double robotAdjustment = Utils.normalRelativeAngle(getBearingToPoint(centerTarget));
+        System.out.println(getBearingToPoint(centerTarget));
+        double robotAdjustment = getBearingToPoint(centerTarget);
 
         setTurnRightRadians(robotAdjustment);
-        setAhead(calculateDistance(xCenter,yCenter));
-        execute();
+        setAhead(calculateDistance(centerTarget.getX(),centerTarget.getY()));
 
     }
 
     private double getBearingToPoint(Point2D target) {
 
-        return PI / 2 - Math.atan2(getY() - target.getY(), getX() - target.getX());
+        return Math.atan2(getY() - target.getY(), getX() - target.getX()) - getHeadingRadians();
     }
 
     private double calculateDistance(double x, double y) {
@@ -211,5 +198,16 @@ public class GuessFactorTargeting extends AdvancedRobot {
                     (int) height);
 
         }
+
+        if (centerTarget != null) {
+            g.setColor(Color.GREEN);
+            int x1 = (int) getX();
+            int y1 = (int) getY();
+            int x2 = (int) centerTarget.getX();
+            int y2 = (int) centerTarget.getY();
+
+            g.drawLine(x1,y1,x2,y2);
+        }
+
     }
 }
