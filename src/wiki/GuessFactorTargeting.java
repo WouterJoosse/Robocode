@@ -1,4 +1,4 @@
-package tutorials;
+package wiki;
 
 import robocode.AdvancedRobot;
 import robocode.ScannedRobotEvent;

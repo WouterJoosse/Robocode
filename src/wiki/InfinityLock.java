@@ -1,4 +1,4 @@
-package radarbots;
+package wiki;
 
 import robocode.*;
 

@@ -6,13 +6,15 @@ import robocode.util.Utils;
 /**
  * My implementation of the wavebullet class, found at: <br>
  * <a href=http://robowiki.net/wiki/GuessFactor_Targeting_Tutorial>
- *     http://robowiki.net/wiki/GuessFactor_Targeting_Tutorial</a>
+ *     http://robowiki.net/wiki/GuessFactor_Targeting_Tutorial
+ * </a>
  */
 public class WaveBullet {
 
     private double startX, startY, startBearing, power;
     private long fireTime;
     private int direction;
+    //TODO: implement more segments, in order to increase accuracy
     private int[] returnSegment;
 
     public WaveBullet(double x, double y, double bearing,
@@ -45,9 +47,13 @@ public class WaveBullet {
      * For more info, see: <br>
      *      <a href=http://robowiki.net/wiki/Maximum_Escape_Angle>
      *          http://robowiki.net/wiki/Maximum_Escape_Angle</a>
+     *<br>
+     *
      *
      * @return The maximum escape angle
      */
+
+    //TODO: implement: learning the escape angle by use of reinforcement learning (or nearest neighbour)
     public double maxEscapeAngle() {
         return Math.asin( 8 / getBulletSpeed() );
     }
